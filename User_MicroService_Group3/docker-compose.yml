@@ -1,0 +1,24 @@
+version: "3.2"
+
+services:
+
+  user-microservice:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+      no_cache: true
+    image: user-microservice:3.0
+    container_name: user-microservice
+    ports:
+      - "5000:5000"
+    environment:
+      #DATABASE_URL: "DRIVER={ODBC Driver 17 for SQL Server};SERVER=user-database,1433;DATABASE=User_Management;UID=sa;PWD=WebTechGroup3;"
+      KAFKA_SERVER: "kafka:9092"
+      SECRET_KEY: Group3
+    networks:
+      - kafka_network
+      
+networks:
+  kafka_network:
+    external: true
+    #driver: bridge

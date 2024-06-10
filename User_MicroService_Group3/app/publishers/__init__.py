@@ -1,0 +1,1 @@
+from publishers.kafkaPublishers import create_profile_updated_topic

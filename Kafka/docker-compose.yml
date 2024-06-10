@@ -1,0 +1,29 @@
+version: "3.2"
+
+services:
+  zookeeper:
+    image: wurstmeister/zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka_network
+
+  kafka:
+    image: wurstmeister/kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+    depends_on:
+      - zookeeper
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_BOOTSTRAP_SEVERS: kafka:9092
+    networks:
+      - kafka_network
+      
+networks:
+  kafka_network:
+    external: true
+    #driver: bridge

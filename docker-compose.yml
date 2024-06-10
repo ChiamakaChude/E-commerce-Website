@@ -1,0 +1,84 @@
+version: "3.2"
+
+services:
+
+  # Orders microservice
+  orders-microservice:
+    image: amychude/group3:orders-microservice-3.0
+    container_name: orders-microservice-3.0
+    ports:
+      - "5003:5003"
+    environment:
+      #DATABASE_URL: "DRIVER={ODBC Driver 17 for SQL Server};SERVER=orders-database-2.0,1433;DATABASE=Orders;UID=sa;PWD=WebTechGroup3;"
+      KAFKA_SERVER: "kafka:9092"
+      SECRET_KEY: "Group3"
+    depends_on:
+      - kafka
+    networks:
+      - kafka_network
+    command: >
+        /bin/bash -c "sleep 60 && python index.py"
+
+
+  # Product microservice
+  product-microservice:
+    image: amychude/group3:product-microservice-3.0
+    container_name: product-microservice-3.0
+    ports:
+      - "5001:5001"
+    environment:
+      #DATABASE_URL: "DRIVER={ODBC Driver 17 for SQL Server};SERVER=product-database-2.0,1433;DATABASE=Products;UID=sa;PWD=WebTechGroup3;"
+      KAFKA_SERVER: "kafka:9092"
+      SECRET_KEY: "Group3"
+    depends_on:
+      - kafka
+    networks:
+      - kafka_network
+    command: >
+        /bin/bash -c "sleep 60 && python index.py"
+
+
+  # User microservice
+  user-microservice:
+    image: amychude/group3:user-microservice-3.0
+    container_name: user-microservice-3.0
+    ports:
+      - "5000:5000"
+    environment:
+      #DATABASE_URL: "DRIVER={ODBC Driver 17 for SQL Server};SERVER=user-database-2.0,1433;DATABASE=User_Management;UID=sa;PWD=WebTechGroup3;"
+      KAFKA_SERVER: "kafka:9092"
+      SECRET_KEY: "Group3"
+    depends_on:
+      - kafka
+    networks:
+      - kafka_network
+    command: >
+        /bin/bash -c "sleep 60 && python index.py"
+
+  # Kafka service
+  kafka:
+    image: amychude/group3:kafka-2.0
+    container_name: kafka-2.0
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: kafka
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_BOOTSTRAP_SEVERS: kafka:9092
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka_network
+
+  # Zookeeper service
+  zookeeper:
+    image: amychude/group3:zookeeper-2.0
+    container_name: zookeeper-2.0
+    ports:
+      - "2181:2181"
+    networks:
+      - kafka_network
+
+networks:
+  kafka_network:
+    driver: bridge
